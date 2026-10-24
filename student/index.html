@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#090d19">
+  <meta name="description" content="سامانه مدیریت دریافت سری تمرین‌ها و آماده‌سازی پاسخ‌های دانشجویی">
+  <title>FileVault | فضای آموزشی دانشجو</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar" id="sidebar">
+      <a class="brand" href="#overview" data-page="overview" aria-label="FileVault صفحه اصلی">
+        <div class="brand-icon" aria-hidden="true">⬡</div>
+        <div><h1>FileVault</h1><p>فضای آموزشی دانشجو</p></div>
+      </a>
+      <div>
+        <p class="nav-label">فضای دانشجو</p>
+        <nav class="nav" aria-label="ناوبری اصلی">
+          <button class="active" data-page="overview" type="button"><span class="nav-icon">⌂</span>نمای کلی</button>
+          <button data-page="exercises" type="button"><span class="nav-icon">▤</span>سری تمرین‌ها</button>
+          <button data-page="submit" type="button"><span class="nav-icon">⇧</span>آماده‌سازی پاسخ</button>
+        </nav>
+      </div>
+      <div class="sidebar-bottom">
+        <div class="storage-box"><div class="storage-head"><span>راهنمای استفاده</span><span aria-hidden="true">●</span></div><p class="sidebar-help">دانشگاه و درس را انتخاب کن، فایل تمرین را دریافت کن و پاسخ مربوط به همان سری را آماده کن.</p></div>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="mobile-menu" id="mobileMenu" type="button" aria-label="باز کردن منو" aria-expanded="false">☰</button>
+          <div><h2 id="topTitle">نمای کلی</h2><p>دریافت تمرین و آماده‌سازی پاسخ</p></div>
+        </div>
+        <div class="top-actions"><div class="environment-badge"><span aria-hidden="true">●</span>محیط آماده‌سازی</div><div class="avatar" aria-hidden="true">دانشجو</div></div>
+      </header>
+
+      <div class="content">
+        <section class="page active" id="overview">
+          <div class="hero"><div><div class="eyebrow">FILEVAULT · STUDENT SPACE</div><h3>همه تمرین‌ها، در یک فضای منظم</h3><p>درس موردنظر را انتخاب کن، جزئیات و مهلت سری‌های تمرین را ببین و فایل‌های پاسخ خود را برای ارسال آماده کن.</p><button class="btn btn-primary" data-go="exercises" type="button">مشاهده سری تمرین‌ها <span>←</span></button></div><div class="hero-art" aria-hidden="true">▤</div></div>
+          <div class="stats">
+            <article class="stat"><div class="stat-top"><span>سری‌های در دسترس</span><span class="stat-icon">▤</span></div><div class="stat-value" id="statSeries">۰</div><div class="stat-note">برای دانشگاه و درس انتخاب‌شده</div></article>
+            <article class="stat"><div class="stat-top"><span>مهلت‌های باز</span><span class="stat-icon">◷</span></div><div class="stat-value" id="statDeadlines">۰</div><div class="stat-note">سری‌هایی که مهلت آن‌ها نگذشته است</div></article>
+            <article class="stat"><div class="stat-top"><span>مسیر آموزشی</span><span class="stat-icon">⌖</span></div><div class="stat-value stat-value-text" id="statSelection">انتخاب نشده</div><div class="stat-note" id="statUniversity">دانشگاه و درس را از فهرست انتخاب کن</div></article>
+            <article class="stat"><div class="stat-top"><span>وضعیت ارسال آنلاین</span><span class="stat-icon">↗</span></div><div class="stat-value stat-value-text">غیرفعال</div><div class="stat-note">تا زمان اتصال سامانه به سرور</div></article>
+          </div>
+          <section class="panel"><div class="panel-heading"><div><h3>شروع سریع</h3><p>برای دسترسی به تمرین‌های مرتبط، این مراحل را دنبال کن.</p></div></div><div class="steps-grid"><article class="step-card"><span class="step-number">۱</span><div><h4>انتخاب مسیر آموزشی</h4><p>دانشگاه و درس موردنظر را مشخص کن.</p></div></article><article class="step-card"><span class="step-number">۲</span><div><h4>بررسی سری تمرین</h4><p>شرح تمرین، تاریخ انتشار و مهلت را بخوان.</p></div></article><article class="step-card"><span class="step-number">۳</span><div><h4>آماده‌سازی پاسخ</h4><p>فایل‌ها را بررسی و برای ارسال آماده کن.</p></div></article></div></section>
+          <div class="notice info"><strong>اطلاعیه سامانه</strong><p>این نسخه برای بررسی رابط کاربری آماده شده است. ارسال آنلاین، ذخیره اطلاعات و دریافت فایل‌های اصلی پس از اتصال به سرویس سمت سرور فعال خواهند شد.</p></div>
+        </section>
+
+        <section class="page" id="exercises">
+          <div class="page-intro"><div class="eyebrow">EXERCISE LIBRARY</div><h2 class="page-title">سری تمرین‌ها</h2><p class="page-description">دانشگاه و درس را انتخاب کن تا فهرست مرتبط نمایش داده شود.</p></div>
+          <section class="panel selector-panel"><div class="panel-heading"><div><h3>مسیر آموزشی</h3><p>ابتدا دانشگاه و سپس درس را انتخاب کن.</p></div></div><div class="form-grid"><div class="field"><label for="universitySelect">دانشگاه <span class="required">*</span></label><select id="universitySelect" required><option value="">انتخاب دانشگاه</option></select></div><div class="field"><label for="courseSelect">درس <span class="required">*</span></label><select id="courseSelect" required disabled><option value="">ابتدا دانشگاه را انتخاب کن</option></select></div></div></section>
+          <div class="row-between result-heading"><div><h3 class="section-title">فهرست سری‌ها</h3><p class="muted-text" id="seriesCount">برای مشاهده، دانشگاه و درس را انتخاب کن.</p></div><button class="btn btn-secondary btn-small" id="resetSelection" type="button">پاک‌کردن انتخاب‌ها</button></div>
+          <div id="seriesList" class="series-grid"><div class="empty-card"><div class="empty-icon">▤</div><h3>انتخاب مسیر آموزشی</h3><p>پس از انتخاب دانشگاه و درس، سری‌های مربوط در این بخش نمایش داده می‌شوند.</p></div></div>
+        </section>
+
+        <section class="page" id="submit">
+          <div class="page-intro"><div class="eyebrow">PREPARE YOUR SUBMISSION</div><h2 class="page-title">آماده‌سازی پاسخ تمرین</h2><p class="page-description">اطلاعات دانشجویی و فایل‌های پاسخ را ثبت کن تا پیش‌نمایش نهایی را بررسی کنی.</p></div>
+          <div class="upload-grid">
+            <section class="panel"><div class="panel-heading"><div><h3>اطلاعات دانشجو و پاسخ</h3><p>موارد ستاره‌دار الزامی هستند.</p></div></div>
+              <form id="submissionForm" novalidate>
+                <div class="form-grid">
+                  <div class="field"><label for="studentId">شماره دانشجویی <span class="required">*</span></label><input id="studentId" name="studentId" type="text" maxlength="40" autocomplete="off" required placeholder="شماره دانشجویی"></div>
+                  <div class="field"><label for="studentName">نام و نام خانوادگی <span class="required">*</span></label><input id="studentName" name="studentName" type="text" maxlength="100" autocomplete="name" required placeholder="نام و نام خانوادگی"></div>
+                  <div class="field full"><label for="studentEmail">ایمیل دانشجو <span class="required">*</span></label><input id="studentEmail" name="studentEmail" type="email" maxlength="254" autocomplete="email" required placeholder="name@example.com" dir="ltr"></div>
+                  <div class="field"><label for="submissionUniversity">دانشگاه <span class="required">*</span></label><select id="submissionUniversity" name="university" required><option value="">انتخاب دانشگاه</option></select></div>
+                  <div class="field"><label for="submissionCourse">درس <span class="required">*</span></label><select id="submissionCourse" name="course" required disabled><option value="">ابتدا دانشگاه را انتخاب کن</option></select></div>
+                  <div class="field full"><label for="submissionSeries">سری تمرین <span class="required">*</span></label><select id="submissionSeries" name="series" required disabled><option value="">ابتدا دانشگاه و درس را انتخاب کن</option></select><p class="hint" id="seriesHint">ابتدا دانشگاه و سپس درس را انتخاب کن.</p></div>
+                </div>
+                <div class="field file-field"><label>فایل پاسخ‌ها <span class="required">*</span></label><input id="answerFiles" type="file" accept=".jpg,.jpeg,.png,.webp,.pdf,application/pdf,image/jpeg,image/png,image/webp" multiple hidden><input id="answerImages" type="file" accept="image/jpeg,image/png,image/webp" multiple hidden><div class="dropzone answer-dropzone" id="answerDropzone" role="button" tabindex="0" aria-label="انتخاب یا رها کردن فایل‌های پاسخ"><div class="drop-icon">⇧</div><h4>فایل‌های پاسخ را انتخاب یا اینجا رها کن</h4><p>PDF، JPG، PNG یا WEBP<br>حداکثر ۱۰ فایل، هر فایل تا ۱۰ مگابایت</p><span class="btn btn-secondary btn-small">مرور فایل‌ها</span></div><div class="file-source-actions"><button class="btn btn-secondary" id="chooseGallery" type="button"><span aria-hidden="true">▧</span> انتخاب عکس</button><button class="btn btn-secondary" id="chooseDeviceFiles" type="button"><span aria-hidden="true">▤</span> انتخاب فایل از دستگاه</button></div><div id="answerFileList" class="file-list"></div><div class="row-between file-summary-row"><span id="answerFileSummary" class="hint">هنوز فایلی انتخاب نشده است.</span><button class="text-button" id="clearAnswerFiles" type="button">پاک‌کردن همه</button></div></div>
+                <div class="field full message-field"><label for="studentMessage">توضیحات برای استاد (اختیاری)</label><textarea id="studentMessage" name="message" maxlength="2000" placeholder="اگر نکته‌ای درباره پاسخ‌ها وجود دارد، اینجا بنویس..."></textarea></div>
+                <div class="notice warning form-notice">این فرم در حال حاضر برای بررسی و آماده‌سازی اطلاعات است؛ فایلی به سرور ارسال نمی‌شود.</div><button class="btn btn-primary submit-button" type="submit">بررسی پیش‌نمایش پاسخ <span>←</span></button>
+              </form>
+            </section>
+            <aside class="upload-side"><section class="panel"><div class="panel-heading"><div><h3>چک‌لیست پیش از ارسال</h3><p>پیش از نهایی‌کردن پاسخ، موارد زیر را بررسی کن.</p></div></div><div class="check-list"><div class="check-row"><div class="check-mark">✓</div><div><strong>اطلاعات دانشجویی</strong><span>شماره دانشجویی و ایمیل را بازبینی کن.</span></div></div><div class="check-row"><div class="check-mark">✓</div><div><strong>سری تمرین صحیح</strong><span>مطمئن شو پاسخ‌ها برای همین سری هستند.</span></div></div><div class="check-row"><div class="check-mark">✓</div><div><strong>نام و فرمت فایل‌ها</strong><span>فایل‌های خوانا و با فرمت مجاز انتخاب کن.</span></div></div></div></section><div class="notice info"><strong>درباره حریم اطلاعات</strong><p>اطلاعاتی که وارد می‌کنی در این نسخه به سامانه‌ای ارسال نمی‌شود. از واردکردن اطلاعات واقعی حساس در محیط پیش‌نمایش خودداری کن.</p></div></aside>
+          </div>
+        </section>
+        <footer class="footer-note"><span>FileVault</span><span>محیط آماده‌سازی فرانت‌اند · ارسال آنلاین هنوز فعال نیست</span></footer>
+      </div>
+    </main>
+  </div>
+  <div class="modal-backdrop" id="modalBackdrop" role="dialog" aria-modal="true" aria-labelledby="modalTitle" aria-hidden="true"><div class="modal"><div class="modal-head"><h3 id="modalTitle">پیش‌نمایش</h3><button class="icon-button" id="closeModal" type="button" aria-label="بستن پنجره">✕</button></div><div class="modal-content" id="modalContent"></div><div class="modal-actions"><button class="btn btn-secondary" id="modalCloseButton" type="button">بازگشت به فرم</button></div></div></div>
+  <div class="toast-container" id="toastContainer" aria-live="polite" aria-atomic="true"></div>
+  <script src="js/script.js"></script>
+</body>
+</html>

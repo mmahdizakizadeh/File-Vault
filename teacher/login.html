@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#10172a">
+  <title>ورود استاد | FileVault</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/login.css">
+</head>
+<body class="login-body">
+  <main class="login-shell">
+    <a class="brand login-brand" href="login.html" aria-label="FileVault">
+      <span class="brand-mark">F</span>
+      <span><strong>FileVault</strong><small>مدیریت هوشمند فایل‌ها</small></span>
+    </a>
+    <section class="login-card">
+      <div class="login-icon">↗</div>
+      <p class="eyebrow">TEACHER WORKSPACE</p>
+      <h1>ورود به پنل استاد</h1>
+      <p class="muted login-intro">برای مدیریت سری تمرین‌ها و بررسی ارسال دانشجویان وارد شوید.</p>
+      <div class="demo-notice"><strong>ورود امن</strong><span>ورود پس از اتصال سرویس احراز هویت فعال می‌شود.</span></div>
+      <form id="login-form" novalidate>
+        <label for="email">ایمیل یا نام کاربری</label>
+        <input id="email" name="email" autocomplete="username" placeholder="ایمیل سازمانی" required>
+        <label for="password">رمز عبور</label>
+        <div class="password-wrap">
+          <input id="password" name="password" type="password" autocomplete="current-password" placeholder="رمز عبور" required>
+          <button type="button" class="password-toggle" id="toggle-password" aria-label="نمایش رمز عبور">نمایش</button>
+        </div>
+        <p class="form-error" id="login-error" role="alert"></p>
+        <button class="btn btn-primary btn-full" type="submit" id="login-submit">ورود به پنل <span>←</span></button>
+      </form>
+      <p class="login-hint">ورود با اعتبارسنجی سمت سرور انجام می‌شود؛ این قابلیت هنوز به بک‌اند متصل نشده است.</p>
+      <a class="back-link" href="../index.html">بازگشت به پنل دانشجو</a>
+    </section>
+    <p class="footer-note">FileVault · پنل استاد</p>
+  </main>
+  <script src="js/login.js"></script>
+</body>
+</html>

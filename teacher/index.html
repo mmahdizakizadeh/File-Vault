@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#10172a">
+  <title>پنل استاد | FileVault</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/dashboard.css">
+</head>
+<body>
+  <div class="app-layout">
+    <aside class="sidebar" id="sidebar">
+      <a class="brand" href="#dashboard">
+        <span class="brand-mark">F</span>
+        <span><strong>FileVault</strong><small>پنل مدیریت استاد</small></span>
+      </a>
+      <div class="sidebar-label">فضای کاری</div>
+      <nav class="main-nav" aria-label="منوی اصلی">
+        <button class="nav-item active" data-page="dashboard"><span class="nav-icon">⌂</span> صفحه اصلی</button>
+        <button class="nav-item" data-page="exercises"><span class="nav-icon">▤</span> سری‌های تمرین</button>
+        <button class="nav-item" data-page="create"><span class="nav-icon">＋</span> ایجاد سری تمرین</button>
+        <button class="nav-item" data-page="submissions"><span class="nav-icon">⇩</span> ارسال‌های دانشجویان</button>
+        <button class="nav-item" data-page="settings"><span class="nav-icon">⚙</span> تنظیمات</button>
+      </nav>
+      <div class="sidebar-bottom">
+        <div class="sidebar-profile"><div class="avatar">F</div><div><strong id="sidebar-name">استاد</strong><small>پنل مدیریت</small></div></div>
+        <button class="nav-item logout-item" id="logout-button"><span class="nav-icon">↪</span> خروج از پنل</button>
+      </div>
+    </aside>
+
+    <main class="main-area">
+      <header class="topbar">
+        <div class="topbar-start">
+          <button class="icon-button mobile-menu" id="mobile-menu" aria-label="باز کردن منو">☰</button>
+          <div><p class="topbar-kicker">FILEVAULT / TEACHER</p><h1 id="page-title">صفحه اصلی</h1></div>
+        </div>
+        <div class="topbar-end"><div class="top-avatar">F</div></div>
+      </header>
+
+
+      <div class="service-error hidden" id="service-error" role="status">اتصال به سرویس برقرار نیست. برای نمایش دانشگاه‌ها، درس‌ها و اطلاعات واقعی، بک‌اند FileVault باید راه‌اندازی شود.</div>
+
+      <section class="page-section active" id="page-dashboard">
+        <div class="welcome-row"><div><p class="eyebrow">TEACHER OVERVIEW</p><h2>خوش آمدید، استاد</h2><p class="muted">از اینجا می‌توانید سری‌های تمرین را ایجاد و مدیریت کنید.</p></div><button class="btn btn-primary" data-go="create">＋ ایجاد سری تمرین</button></div>
+        <div class="dashboard-grid">
+          <button class="action-card" data-go="create"><span class="action-icon purple">＋</span><span><strong>ایجاد سری تمرین</strong><small>تعریف درس، مهلت و فایل‌های تمرین</small></span><b>←</b></button>
+          <button class="action-card" data-go="exercises"><span class="action-icon blue">▤</span><span><strong>مدیریت سری‌های تمرین</strong><small>مشاهده، ویرایش و انتشار تمرین‌ها</small></span><b>←</b></button>
+          <button class="action-card" data-go="submissions"><span class="action-icon green">⇩</span><span><strong>ارسال‌های دانشجویان</strong><small>مشاهده ارسال‌های ثبت‌شده و فایل‌ها</small></span><b>←</b></button>
+        </div>
+        <div class="section-heading"><div><h3>شروع سریع</h3><p class="muted">چند اقدام رایج برای مدیریت تمرین‌ها</p></div></div>
+        <div class="quick-actions">
+          <button class="quick-action" data-go="create"><span>＋</span><div><strong>ساخت تمرین جدید</strong><small>اطلاعات را تکمیل و سری تمرین را منتشر کنید.</small></div></button>
+        </div>
+      </section>
+
+      <section class="page-section" id="page-create">
+        <div class="section-heading"><div><p class="eyebrow">EXERCISE BUILDER</p><h2 id="create-heading">ایجاد سری تمرین</h2><p class="muted">اطلاعات سری تمرین را تکمیل و آن را منتشر کنید.</p></div></div>
+        <form id="exercise-form" class="panel form-panel" novalidate>
+          <input type="hidden" id="edit-id">
+          <div class="form-section-title"><span>۱</span><div><strong>اطلاعات اصلی</strong><small>عنوان، توضیحات و مهلت ارسال</small></div></div>
+          <div class="form-grid">
+            <div class="field field-wide"><label for="exercise-title">عنوان سری تمرین <b>*</b></label><input id="exercise-title" maxlength="120" placeholder="مثلاً سری اول: مبانی HTML و CSS" required></div>
+            <div class="field field-wide"><label for="exercise-description">توضیحات تمرین</label><textarea id="exercise-description" rows="3" placeholder="شرح کوتاه تمرین و نکات موردنیاز..."></textarea></div>
+            <div class="field"><label for="exercise-university">دانشگاه <b>*</b></label><select id="exercise-university" required><option value="">انتخاب دانشگاه</option></select></div>
+            <div class="field"><label for="exercise-course">درس <b>*</b></label><select id="exercise-course" required disabled><option value="">ابتدا دانشگاه را انتخاب کنید</option></select></div>
+            <div class="field"><label for="exercise-deadline">مهلت ارسال (شمسی)</label><input type="text" id="exercise-deadline" inputmode="numeric" autocomplete="off" placeholder="۱۴۰۵/۰۸/۳۰ ۲۳:۵۹" aria-describedby="deadline-hint"><small id="deadline-hint" class="muted">قالب تاریخ: سال/ماه/روز ساعت:دقیقه</small></div>
+          </div>
+          <div class="form-section-title file-title"><span>۲</span><div><strong>فایل‌های تمرین</strong><small>فایل‌های لازم را برای دریافت دانشجویان انتخاب کنید.</small></div></div>
+          <div class="dropzone" id="exercise-dropzone"><span class="upload-symbol">↑</span><strong>فایل‌های تمرین را انتخاب کنید</strong><small>PDF، تصاویر و فایل‌های متداول · حداکثر ۱۰ فایل، هر فایل تا ۱۰ مگابایت</small><button type="button" class="btn btn-secondary" id="choose-files">انتخاب فایل</button><input id="exercise-files" type="file" multiple accept=".pdf,.jpg,.jpeg,.png,.webp,.zip,.doc,.docx,.ppt,.pptx,.txt" aria-label="انتخاب فایل‌های تمرین"></div>
+          <div id="selected-files" class="selected-files"></div>
+          <div class="form-footer"><p class="muted">انتشار واقعی و ذخیره فایل‌ها به اتصال بک‌اند نیاز دارد.</p><div class="button-row"><button type="button" class="btn btn-secondary" id="cancel-edit">انصراف</button><button type="submit" class="btn btn-primary" name="intent" value="publish" id="publish-exercise">انتشار تمرین</button></div></div>
+        </form>
+      </section>
+
+      <section class="page-section" id="page-exercises">
+        <div class="section-heading section-heading-responsive"><div><p class="eyebrow">EXERCISE LIBRARY</p><h2>مدیریت سری‌های تمرین</h2><p class="muted">سری‌های تمرین را جست‌وجو، ویرایش و منتشر کنید.</p></div><button class="btn btn-primary" data-go="create">＋ سری جدید</button></div>
+        <div class="panel filters-panel">
+          <div class="filter-search"><label for="exercise-search">جست‌وجو</label><input id="exercise-search" placeholder="عنوان سری تمرین..."></div>
+          <div class="filter-field"><label for="filter-university">دانشگاه</label><select id="filter-university"><option value="">همه دانشگاه‌ها</option></select></div>
+          <div class="filter-field"><label for="filter-course">درس</label><select id="filter-course"><option value="">همه درس‌ها</option></select></div>
+          
+        </div>
+        <div class="panel table-panel"><div class="table-topline"><div><h3>سری‌های تمرین</h3><p class="muted" id="exercise-count">۰ سری</p></div><span class="small-note">فقط سری‌های منتشرشده</span></div><div class="table-scroll"><table><thead><tr><th>عنوان</th><th>دانشگاه / درس</th><th>مهلت ارسال</th><th>عملیات</th></tr></thead><tbody id="exercise-table-body"></tbody></table></div><div class="empty-state hidden" id="exercise-empty"><span>▤</span><strong>سری تمرینی پیدا نشد</strong><p>فیلترها را تغییر دهید یا یک سری تمرین جدید ایجاد کنید.</p></div></div>
+      </section>
+
+      <section class="page-section" id="page-submissions">
+        <div class="section-heading"><div><p class="eyebrow">STUDENT SUBMISSIONS</p><h2>ارسال‌های دانشجویان</h2><p class="muted">ارسال‌های ثبت‌شده برای سری‌های تمرین منتشرشده.</p></div></div>
+        <div class="panel filters-panel submission-filters">
+          <div class="filter-search"><label for="submission-search">جست‌وجوی دانشجو</label><input id="submission-search" placeholder="نام، شماره دانشجویی یا ایمیل"></div>
+          <div class="filter-field"><label for="submission-university">دانشگاه</label><select id="submission-university"><option value="">همه دانشگاه‌ها</option></select></div>
+          <div class="filter-field"><label for="submission-course">درس</label><select id="submission-course"><option value="">همه درس‌ها</option></select></div>
+          <div class="filter-field"><label for="submission-exercise">سری تمرین</label><select id="submission-exercise"><option value="">همه سری‌ها</option></select></div>
+        </div>
+        <div class="panel table-panel"><div class="table-topline"><div><h3>فهرست ارسال‌ها</h3><p class="muted" id="submission-count">۰ ارسال</p></div></div><div class="table-scroll"><table><thead><tr><th>دانشجو</th><th>دانشگاه / درس</th><th>سری تمرین</th><th>زمان ارسال</th><th>فایل‌ها</th><th>عملیات</th></tr></thead><tbody id="submission-table-body"></tbody></table></div><div class="empty-state hidden" id="submission-empty"><span>⇩</span><strong>ارسالی پیدا نشد</strong><p>با تغییر فیلترها دوباره بررسی کنید.</p></div></div>
+      </section>
+<section class="page-section" id="page-settings">
+        <div class="section-heading"><div><p class="eyebrow">PREFERENCES</p><h2>تنظیمات</h2><p class="muted">تنظیمات حساب کاربری پس از اتصال سرویس احراز هویت فعال می‌شود.</p></div></div>
+        <div class="settings-grid">
+          <div class="panel settings-card"><div class="settings-card-icon">♙</div><h3>حساب استاد</h3><p class="muted">اطلاعات حساب از سرویس احراز هویت دریافت خواهد شد.</p><div class="settings-detail"><span>نام نمایشی</span><strong id="settings-name">—</strong></div><div class="settings-detail"><span>ایمیل</span><strong id="settings-email">—</strong></div></div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div class="modal-backdrop hidden" id="modal-backdrop" role="presentation">
+    <section class="modal-card" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+      <div class="modal-header"><h3 id="modal-title">جزئیات</h3><button class="icon-button" id="modal-close" aria-label="بستن">×</button></div>
+      <div id="modal-content"></div>
+      <div class="modal-footer" id="modal-footer"><button class="btn btn-secondary" id="modal-close-footer">بستن</button></div>
+    </section>
+  </div>
+  <div class="toast-region" id="toast-region" aria-live="polite"></div>
+  <script src="js/dashboard.js"></script>
+</body>
+</html>
