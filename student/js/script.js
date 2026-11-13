@@ -1,33 +1,4 @@
-
 "use strict";
-
-/* =========================================
-   FileVault — Student Panel
-   Django REST Framework API Integration
-========================================= */
-
-/*
-  API contract expected from Django:
-
-  GET  /api/v1/csrf/
-  GET  /api/v1/universities/
-  GET  /api/v1/universities/{universityId}/courses/
-  GET  /api/v1/exercises/?courseId={courseId}
-  GET  /api/v1/exercises/{exerciseId}/
-  GET  /api/v1/exercises/{exerciseId}/files/{fileId}/download/
-  POST /api/v1/submissions/
-
-  Submission multipart fields:
-  exerciseSeriesId
-  universityId
-  courseId
-  studentFirstName
-  studentLastName
-  studentNumber
-  studentEmail
-  message
-  files (repeated)
-*/
 
 const API_BASE = "/api/v1";
 
@@ -50,30 +21,27 @@ const titles = {
   submit: "آماده‌سازی پاسخ",
 };
 
-const fa = (value) =>
-  new Intl.NumberFormat("fa-IR").format(Number(value) || 0);
-
-/* =========================================
-   General utilities
-========================================= */
+const fa = (value) => new Intl.NumberFormat("fa-IR").format(Number(value) || 0);
 
 function escapeHTML(value) {
-  return String(value ?? "").replace(/[&<>"']/g, (char) => ({
-    "&": "&amp;",
-    "<": "&lt;",
-    ">": "&gt;",
-    '"': "&quot;",
-    "'": "&#39;",
-  })[char]);
+  return String(value ?? "").replace(
+    /[&<>"']/g,
+    (char) =>
+      ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;",
+      })[char],
+  );
 }
 
 function formatDate(value) {
   if (!value) return "تعیین نشده";
 
   const date = new Date(
-    /^\d{4}-\d{2}-\d{2}$/.test(value)
-      ? `${value}T12:00:00`
-      : value
+    /^\d{4}-\d{2}-\d{2}$/.test(value) ? `${value}T12:00:00` : value,
   );
 
   if (Number.isNaN(date.getTime())) return "تعیین نشده";
@@ -109,10 +77,7 @@ function notify(message, type = "info") {
     type === "error" || type === "success" ? type : ""
   }`.trim();
 
-  toast.setAttribute(
-    "role",
-    type === "error" ? "alert" : "status"
-  );
+  toast.setAttribute("role", type === "error" ? "alert" : "status");
 
   toast.textContent = message;
   container.append(toast);
@@ -132,9 +97,7 @@ function getCookie(name) {
     const trimmed = cookie.trim();
 
     if (trimmed.startsWith(`${name}=`)) {
-      return decodeURIComponent(
-        trimmed.substring(name.length + 1)
-      );
+      return decodeURIComponent(trimmed.substring(name.length + 1));
     }
   }
 
@@ -199,10 +162,6 @@ function getErrorMessage(payload, fallback) {
   return fallback;
 }
 
-/* =========================================
-   API client
-========================================= */
-
 async function apiRequest(path, options = {}) {
   const url = `${API_BASE}${path}`;
 
@@ -239,10 +198,7 @@ async function apiRequest(path, options = {}) {
   }
 
   if (!response.ok) {
-    const message = getErrorMessage(
-      payload,
-      `خطای سرور (${response.status})`
-    );
+    const message = getErrorMessage(payload, `خطای سرور (${response.status})`);
 
     const error = new Error(message);
     error.status = response.status;
@@ -258,17 +214,13 @@ async function ensureCSRFToken() {
   if (getCookie("csrftoken")) return;
 
   await apiRequest("/csrf/");
-  
+
   if (!getCookie("csrftoken")) {
     throw new Error(
-      "توکن امنیتی CSRF دریافت نشد. تنظیمات CSRF بک‌اند را بررسی کن."
+      "توکن امنیتی CSRF دریافت نشد. تنظیمات CSRF بک‌اند را بررسی کن.",
     );
   }
 }
-
-/* =========================================
-   Connection status
-========================================= */
 
 function updateConnectionStatus(status, message = "") {
   state.connection = status;
@@ -276,11 +228,7 @@ function updateConnectionStatus(status, message = "") {
   const badge = $("#connectionStatus");
 
   if (badge) {
-    badge.classList.remove(
-      "is-loading",
-      "is-online",
-      "is-offline"
-    );
+    badge.classList.remove("is-loading", "is-online", "is-offline");
 
     badge.classList.add(`is-${status}`);
 
@@ -305,7 +253,7 @@ function updateConnectionStatus(status, message = "") {
     statusElement.classList.remove(
       "status-online",
       "status-offline",
-      "status-loading"
+      "status-loading",
     );
 
     statusElement.classList.add(`status-${status}`);
@@ -325,7 +273,7 @@ function updateConnectionStatus(status, message = "") {
       ? "ارتباط با سامانه برقرار است."
       : status === "offline"
         ? "ارتباط با سرور برقرار نیست."
-        : "در حال بررسی وضعیت سامانه..."
+        : "در حال بررسی وضعیت سامانه...",
   );
 }
 
@@ -343,10 +291,6 @@ async function checkServerConnection() {
   }
 }
 
-/* =========================================
-   Navigation
-========================================= */
-
 function navigate(page) {
   if (!titles[page]) return;
 
@@ -355,10 +299,7 @@ function navigate(page) {
   });
 
   $$(".nav button").forEach((button) => {
-    button.classList.toggle(
-      "active",
-      button.dataset.page === page
-    );
+    button.classList.toggle("active", button.dataset.page === page);
   });
 
   setText("#topTitle", titles[page]);
@@ -392,10 +333,7 @@ $$("[data-go]").forEach((button) => {
 $("#mobileMenu")?.addEventListener("click", () => {
   const isOpen = $("#sidebar").classList.toggle("mobile-open");
 
-  $("#mobileMenu").setAttribute(
-    "aria-expanded",
-    String(isOpen)
-  );
+  $("#mobileMenu").setAttribute("aria-expanded", String(isOpen));
 });
 
 document.addEventListener("click", (event) => {
@@ -412,10 +350,6 @@ document.addEventListener("click", (event) => {
     mobileMenu?.setAttribute("aria-expanded", "false");
   }
 });
-
-/* =========================================
-   Data normalization
-========================================= */
 
 function normalizeUniversity(item) {
   return {
@@ -435,29 +369,13 @@ function normalizeSeries(item) {
   return {
     id: String(item.id),
     universityId: String(
-      item.universityId ??
-      item.university_id ??
-      item.university?.id ??
-      ""
+      item.universityId ?? item.university_id ?? item.university?.id ?? "",
     ),
-    courseId: String(
-      item.courseId ??
-      item.course_id ??
-      item.course?.id ??
-      ""
-    ),
+    courseId: String(item.courseId ?? item.course_id ?? item.course?.id ?? ""),
     title: item.title || item.name || "سری تمرین بدون عنوان",
     description: item.description || "",
-    publishedAt:
-      item.publishedAt ||
-      item.published_at ||
-      item.created_at ||
-      "",
-    deadline:
-      item.deadline ||
-      item.due_date ||
-      item.deadline_date ||
-      "",
+    publishedAt: item.publishedAt || item.published_at || item.created_at || "",
+    deadline: item.deadline || item.due_date || item.deadline_date || "",
     status: String(item.status || "published").toLowerCase(),
     files: Array.isArray(item.files)
       ? item.files
@@ -468,33 +386,19 @@ function normalizeSeries(item) {
 }
 
 function isPublished(series) {
-  return [
-    "published",
-    "active",
-    "public",
-  ].includes(series.status);
+  return ["published", "active", "public"].includes(series.status);
 }
 
-/* =========================================
-   University and course data
-========================================= */
-
 function findUniversity(id) {
-  return state.universities.find(
-    (university) => university.id === String(id)
-  );
+  return state.universities.find((university) => university.id === String(id));
 }
 
 function findCourse(courseId) {
-  return state.courses.find(
-    (course) => course.id === String(courseId)
-  );
+  return state.courses.find((course) => course.id === String(courseId));
 }
 
 function findSeries(id) {
-  return state.exerciseSeries.find(
-    (series) => series.id === String(id)
-  );
+  return state.exerciseSeries.find((series) => series.id === String(id));
 }
 
 function getPublishedSeries(universityId, courseId) {
@@ -513,7 +417,7 @@ function isDeadlinePassed(series) {
   const deadline = new Date(
     /^\d{4}-\d{2}-\d{2}$/.test(series.deadline)
       ? `${series.deadline}T23:59:59`
-      : series.deadline
+      : series.deadline,
   );
 
   if (Number.isNaN(deadline.getTime())) return false;
@@ -526,13 +430,15 @@ function populateUniversities(select, placeholder) {
 
   select.innerHTML =
     `<option value="">${escapeHTML(placeholder)}</option>` +
-    state.universities.map((university) => {
-      return `
+    state.universities
+      .map((university) => {
+        return `
         <option value="${escapeHTML(university.id)}">
           ${escapeHTML(university.name)}
         </option>
       `;
-    }).join("");
+      })
+      .join("");
 }
 
 function populateCourses(select, courses, placeholder) {
@@ -540,13 +446,15 @@ function populateCourses(select, courses, placeholder) {
 
   select.innerHTML =
     `<option value="">${escapeHTML(placeholder)}</option>` +
-    courses.map((course) => {
-      return `
+    courses
+      .map((course) => {
+        return `
         <option value="${escapeHTML(course.id)}">
           ${escapeHTML(course.name)}
         </option>
       `;
-    }).join("");
+      })
+      .join("");
 
   select.disabled = !courses.length;
 }
@@ -558,13 +466,15 @@ function populateSeriesSelect(select, universityId, courseId, selectedId = "") {
 
   select.innerHTML =
     `<option value="">انتخاب سری تمرین</option>` +
-    series.map((item) => {
-      return `
+    series
+      .map((item) => {
+        return `
         <option value="${escapeHTML(item.id)}">
           ${escapeHTML(item.title)}
         </option>
       `;
-    }).join("");
+      })
+      .join("");
 
   select.disabled = !universityId || !courseId || !series.length;
 
@@ -573,42 +483,23 @@ function populateSeriesSelect(select, universityId, courseId, selectedId = "") {
   }
 }
 
-/* =========================================
-   Load data from Django
-========================================= */
-
 async function loadUniversities() {
   const payload = await apiRequest("/universities/");
 
-  state.universities = normalizeList(payload)
-    .map(normalizeUniversity);
+  state.universities = normalizeList(payload).map(normalizeUniversity);
 
-  populateUniversities(
-    $("#universitySelect"),
-    "انتخاب دانشگاه"
-  );
+  populateUniversities($("#universitySelect"), "انتخاب دانشگاه");
 
-  populateUniversities(
-    $("#submissionUniversity"),
-    "انتخاب دانشگاه"
-  );
+  populateUniversities($("#submissionUniversity"), "انتخاب دانشگاه");
 }
 
 async function loadCourses(universityId) {
   if (!universityId) {
     state.courses = [];
 
-    populateCourses(
-      $("#courseSelect"),
-      [],
-      "ابتدا دانشگاه را انتخاب کن"
-    );
+    populateCourses($("#courseSelect"), [], "ابتدا دانشگاه را انتخاب کن");
 
-    populateCourses(
-      $("#submissionCourse"),
-      [],
-      "ابتدا دانشگاه را انتخاب کن"
-    );
+    populateCourses($("#submissionCourse"), [], "ابتدا دانشگاه را انتخاب کن");
 
     state.exerciseSeries = [];
     renderSeries();
@@ -617,7 +508,7 @@ async function loadCourses(universityId) {
   }
 
   const payload = await apiRequest(
-    `/universities/${encodeURIComponent(universityId)}/courses/`
+    `/universities/${encodeURIComponent(universityId)}/courses/`,
   );
 
   state.courses = normalizeList(payload).map(normalizeCourse);
@@ -635,9 +526,7 @@ async function loadExerciseSeries(courseId) {
     courseId: String(courseId),
   });
 
-  const payload = await apiRequest(
-    `/exercises/?${params.toString()}`
-  );
+  const payload = await apiRequest(`/exercises/?${params.toString()}`);
 
   state.exerciseSeries = normalizeList(payload)
     .map(normalizeSeries)
@@ -654,7 +543,6 @@ async function loadInitialData() {
 
     renderSeries();
     updateOverview();
-
   } catch (error) {
     console.error("Initial data loading failed:", error);
 
@@ -662,16 +550,12 @@ async function loadInitialData() {
 
     notify(
       "دریافت اطلاعات از سرور انجام نشد. اتصال بک‌اند را بررسی کن.",
-      "error"
+      "error",
     );
 
     renderSeries();
   }
 }
-
-/* =========================================
-   Exercise series
-========================================= */
 
 function seriesCard(series) {
   const expired = isDeadlinePassed(series);
@@ -679,9 +563,7 @@ function seriesCard(series) {
   const university = findUniversity(series.universityId);
   const course = findCourse(series.courseId);
 
-  const deadlineLabel = expired
-    ? "مهلت پایان‌یافته"
-    : "مهلت فعال";
+  const deadlineLabel = expired ? "مهلت پایان‌یافته" : "مهلت فعال";
 
   return `
     <article class="series-card">
@@ -775,11 +657,7 @@ function renderSeries() {
       </div>
     `;
 
-    setText(
-      "#seriesCount",
-      "برای مشاهده سری‌ها، دانشگاه و درس را انتخاب کن."
-    );
-
+    setText("#seriesCount", "برای مشاهده سری‌ها، دانشگاه و درس را انتخاب کن.");
   } else if (!series.length) {
     list.innerHTML = `
       <div class="empty-card">
@@ -792,14 +670,10 @@ function renderSeries() {
     `;
 
     setText("#seriesCount", "۰ سری در دسترس");
-
   } else {
     list.innerHTML = series.map(seriesCard).join("");
 
-    setText(
-      "#seriesCount",
-      `${fa(series.length)} سری در فهرست این درس`
-    );
+    setText("#seriesCount", `${fa(series.length)} سری در فهرست این درس`);
   }
 
   updateOverview();
@@ -810,12 +684,10 @@ function updateOverview() {
   const courseId = $("#courseSelect")?.value || "";
 
   const series =
-    universityId && courseId
-      ? getPublishedSeries(universityId, courseId)
-      : [];
+    universityId && courseId ? getPublishedSeries(universityId, courseId) : [];
 
   const activeDeadlines = series.filter(
-    (item) => !isDeadlinePassed(item)
+    (item) => !isDeadlinePassed(item),
   ).length;
 
   setText("#statSeries", fa(series.length));
@@ -826,20 +698,14 @@ function updateOverview() {
 
   setText(
     "#statSelection",
-    course?.name || (university ? "درس انتخاب نشده" : "انتخاب نشده")
+    course?.name || (university ? "درس انتخاب نشده" : "انتخاب نشده"),
   );
 
   setText(
     "#statUniversity",
-    university
-      ? university.name
-      : "دانشگاه و درس را از فهرست انتخاب کن"
+    university ? university.name : "دانشگاه و درس را از فهرست انتخاب کن",
   );
 }
-
-/* =========================================
-   Main university/course selectors
-========================================= */
 
 $("#universitySelect")?.addEventListener("change", async () => {
   const universityId = $("#universitySelect").value;
@@ -850,22 +716,17 @@ $("#universitySelect")?.addEventListener("change", async () => {
     populateCourses(
       $("#courseSelect"),
       courses,
-      universityId ? "انتخاب درس" : "ابتدا دانشگاه را انتخاب کن"
+      universityId ? "انتخاب درس" : "ابتدا دانشگاه را انتخاب کن",
     );
 
     state.exerciseSeries = [];
     renderSeries();
-
   } catch (error) {
     console.error(error);
 
     notify("دریافت فهرست درس‌ها انجام نشد.", "error");
 
-    populateCourses(
-      $("#courseSelect"),
-      [],
-      "خطا در دریافت درس‌ها"
-    );
+    populateCourses($("#courseSelect"), [], "خطا در دریافت درس‌ها");
   }
 });
 
@@ -875,7 +736,6 @@ $("#courseSelect")?.addEventListener("change", async () => {
   try {
     await loadExerciseSeries(courseId);
     renderSeries();
-
   } catch (error) {
     console.error(error);
 
@@ -894,20 +754,12 @@ $("#resetSelection")?.addEventListener("click", () => {
   state.courses = [];
   state.exerciseSeries = [];
 
-  populateCourses(
-    $("#courseSelect"),
-    [],
-    "ابتدا دانشگاه را انتخاب کن"
-  );
+  populateCourses($("#courseSelect"), [], "ابتدا دانشگاه را انتخاب کن");
 
   renderSeries();
 
   notify("انتخاب مسیر آموزشی پاک شد.", "success");
 });
-
-/* =========================================
-   Submission university/course selectors
-========================================= */
 
 async function syncSubmissionCourses(universityId, selectedCourse = "") {
   const courseSelect = $("#submissionCourse");
@@ -915,24 +767,13 @@ async function syncSubmissionCourses(universityId, selectedCourse = "") {
   if (!universityId) {
     state.courses = [];
 
-    populateCourses(
-      courseSelect,
-      [],
-      "ابتدا دانشگاه را انتخاب کن"
-    );
+    populateCourses(courseSelect, [], "ابتدا دانشگاه را انتخاب کن");
 
     state.exerciseSeries = [];
 
-    populateSeriesSelect(
-      $("#submissionSeries"),
-      "",
-      ""
-    );
+    populateSeriesSelect($("#submissionSeries"), "", "");
 
-    setText(
-      "#seriesHint",
-      "ابتدا دانشگاه و سپس درس را انتخاب کن."
-    );
+    setText("#seriesHint", "ابتدا دانشگاه و سپس درس را انتخاب کن.");
 
     return;
   }
@@ -940,28 +781,20 @@ async function syncSubmissionCourses(universityId, selectedCourse = "") {
   try {
     const courses = await loadCourses(universityId);
 
-    populateCourses(
-      courseSelect,
-      courses,
-      "انتخاب درس"
-    );
+    populateCourses(courseSelect, courses, "انتخاب درس");
 
-    if (selectedCourse && courses.some(
-      (course) => course.id === selectedCourse
-    )) {
+    if (
+      selectedCourse &&
+      courses.some((course) => course.id === selectedCourse)
+    ) {
       courseSelect.value = selectedCourse;
 
       await syncSubmissionSeries();
     } else {
       state.exerciseSeries = [];
 
-      populateSeriesSelect(
-        $("#submissionSeries"),
-        universityId,
-        ""
-      );
+      populateSeriesSelect($("#submissionSeries"), universityId, "");
     }
-
   } catch (error) {
     console.error(error);
 
@@ -976,16 +809,9 @@ async function syncSubmissionSeries(selectedId = "") {
   if (!universityId || !courseId) {
     state.exerciseSeries = [];
 
-    populateSeriesSelect(
-      $("#submissionSeries"),
-      universityId,
-      courseId
-    );
+    populateSeriesSelect($("#submissionSeries"), universityId, courseId);
 
-    setText(
-      "#seriesHint",
-      "ابتدا دانشگاه و سپس درس را انتخاب کن."
-    );
+    setText("#seriesHint", "ابتدا دانشگاه و سپس درس را انتخاب کن.");
 
     return;
   }
@@ -997,16 +823,15 @@ async function syncSubmissionSeries(selectedId = "") {
       $("#submissionSeries"),
       universityId,
       courseId,
-      selectedId
+      selectedId,
     );
 
     setText(
       "#seriesHint",
       getPublishedSeries(universityId, courseId).length
         ? "فقط سری‌های منتشرشده این دانشگاه و درس نمایش داده می‌شوند."
-        : "برای این دانشگاه و درس سری در دسترس نیست."
+        : "برای این دانشگاه و درس سری در دسترس نیست.",
     );
-
   } catch (error) {
     console.error(error);
 
@@ -1015,9 +840,7 @@ async function syncSubmissionSeries(selectedId = "") {
 }
 
 $("#submissionUniversity")?.addEventListener("change", () => {
-  syncSubmissionCourses(
-    $("#submissionUniversity").value
-  );
+  syncSubmissionCourses($("#submissionUniversity").value);
 });
 
 $("#submissionCourse")?.addEventListener("change", () => {
@@ -1031,7 +854,7 @@ $("#submissionSeries")?.addEventListener("change", () => {
     "#seriesHint",
     series
       ? `سری انتخاب‌شده: ${series.title}`
-      : "ابتدا دانشگاه و سپس درس را انتخاب کن."
+      : "ابتدا دانشگاه و سپس درس را انتخاب کن.",
   );
 });
 
@@ -1042,24 +865,14 @@ async function chooseSeriesForSubmission(seriesId) {
 
   $("#submissionUniversity").value = series.universityId;
 
-  await syncSubmissionCourses(
-    series.universityId,
-    series.courseId
-  );
+  await syncSubmissionCourses(series.universityId, series.courseId);
 
   $("#submissionSeries").value = series.id;
 
-  setText(
-    "#seriesHint",
-    `سری انتخاب‌شده: ${series.title}`
-  );
+  setText("#seriesHint", `سری انتخاب‌شده: ${series.title}`);
 
   navigate("submit");
 }
-
-/* =========================================
-   Exercise file details and downloads
-========================================= */
 
 function getFileId(file) {
   return file.id ?? file.file_id ?? file.pk ?? "";
@@ -1110,7 +923,6 @@ async function downloadExerciseFile(series, file) {
     link.remove();
 
     URL.revokeObjectURL(objectUrl);
-
   } catch (error) {
     console.error(error);
     notify(error.message || "خطا در دانلود فایل.", "error");
@@ -1155,11 +967,9 @@ function showFileInfo(seriesId) {
   if (!series.files.length) {
     const message = document.createElement("div");
     message.className = "notice warning";
-    message.textContent =
-      "برای این سری تمرین فایلی در سرور ثبت نشده است.";
+    message.textContent = "برای این سری تمرین فایلی در سرور ثبت نشده است.";
 
     fileSection.append(message);
-
   } else {
     series.files.forEach((file) => {
       const row = document.createElement("div");
@@ -1209,20 +1019,12 @@ $("#seriesList")?.addEventListener("click", async (event) => {
   }
 
   if (submit) {
-    await chooseSeriesForSubmission(
-      submit.dataset.submitSeries
-    );
+    await chooseSeriesForSubmission(submit.dataset.submitSeries);
   }
 });
 
-/* =========================================
-   Answer file validation and selection
-========================================= */
-
 function fileType(name) {
-  return name.split(".").pop().toLowerCase() === "pdf"
-    ? "PDF"
-    : "تصویر";
+  return name.split(".").pop().toLowerCase() === "pdf" ? "PDF" : "تصویر";
 }
 
 function fileEmoji(name) {
@@ -1247,10 +1049,7 @@ function addAnswerFiles(files) {
       !Object.hasOwn(allowed, extension) ||
       (file.type && !allowed[extension].includes(file.type))
     ) {
-      notify(
-        `فرمت فایل «${file.name}» پشتیبانی نمی‌شود.`,
-        "error"
-      );
+      notify(`فرمت فایل «${file.name}» پشتیبانی نمی‌شود.`, "error");
       continue;
     }
 
@@ -1260,10 +1059,7 @@ function addAnswerFiles(files) {
     }
 
     if (file.size > 10 * 1024 * 1024) {
-      notify(
-        `حجم فایل «${file.name}» بیشتر از ۱۰ مگابایت است.`,
-        "error"
-      );
+      notify(`حجم فایل «${file.name}» بیشتر از ۱۰ مگابایت است.`, "error");
       continue;
     }
 
@@ -1292,10 +1088,7 @@ function addAnswerFiles(files) {
   renderAnswerFiles();
 
   if (added) {
-    notify(
-      `${fa(added)} فایل به فهرست پاسخ‌ها اضافه شد.`,
-      "success"
-    );
+    notify(`${fa(added)} فایل به فهرست پاسخ‌ها اضافه شد.`, "success");
   }
 }
 
@@ -1303,8 +1096,9 @@ function renderAnswerFiles() {
   const list = $("#answerFileList");
   if (!list) return;
 
-  list.innerHTML = state.answerFiles.map((file, index) => {
-    return `
+  list.innerHTML = state.answerFiles
+    .map((file, index) => {
+      return `
       <div class="file-item">
 
         <div class="file-icon" aria-hidden="true">
@@ -1327,18 +1121,16 @@ function renderAnswerFiles() {
 
       </div>
     `;
-  }).join("");
+    })
+    .join("");
 
-  const totalSize = state.answerFiles.reduce(
-    (sum, file) => sum + file.size,
-    0
-  );
+  const totalSize = state.answerFiles.reduce((sum, file) => sum + file.size, 0);
 
   setText(
     "#answerFileSummary",
     state.answerFiles.length
       ? `${fa(state.answerFiles.length)} فایل انتخاب‌شده · ${formatSize(totalSize)}`
-      : "هنوز فایلی انتخاب نشده است."
+      : "هنوز فایلی انتخاب نشده است.",
   );
 
   const clearButton = $("#clearAnswerFiles");
@@ -1402,10 +1194,7 @@ $("#answerFileList")?.addEventListener("click", (event) => {
   const button = event.target.closest("[data-remove-answer]");
   if (!button) return;
 
-  state.answerFiles.splice(
-    Number(button.dataset.removeAnswer),
-    1
-  );
+  state.answerFiles.splice(Number(button.dataset.removeAnswer), 1);
 
   renderAnswerFiles();
 });
@@ -1417,10 +1206,6 @@ $("#clearAnswerFiles")?.addEventListener("click", () => {
 
   notify("فهرست فایل‌ها پاک شد.", "success");
 });
-
-/* =========================================
-   Modal
-========================================= */
 
 function showModal(title, content) {
   const backdrop = $("#modalBackdrop");
@@ -1474,10 +1259,6 @@ document.addEventListener("keydown", (event) => {
   }
 });
 
-/* =========================================
-   Submission validation
-========================================= */
-
 function validateSubmission() {
   const requiredFields = [
     ["#studentFirstName", "نام دانشجو را وارد کن."],
@@ -1499,10 +1280,7 @@ function validateSubmission() {
     }
 
     if (!field.checkValidity()) {
-      notify(
-        "لطفاً قالب اطلاعات واردشده را بررسی کن.",
-        "error"
-      );
+      notify("لطفاً قالب اطلاعات واردشده را بررسی کن.", "error");
 
       field.focus();
       return false;
@@ -1529,19 +1307,12 @@ function validateSubmission() {
   });
 
   if (!selectedSeries) {
-    notify(
-      "سری انتخاب‌شده با دانشگاه و درس مطابقت ندارد.",
-      "error"
-    );
+    notify("سری انتخاب‌شده با دانشگاه و درس مطابقت ندارد.", "error");
     return false;
   }
 
   return true;
 }
-
-/* =========================================
-   Submission review
-========================================= */
 
 function createDetail(label, value) {
   const item = document.createElement("div");
@@ -1559,17 +1330,11 @@ function createDetail(label, value) {
 }
 
 function createReviewContent() {
-  const university = findUniversity(
-    $("#submissionUniversity").value
-  );
+  const university = findUniversity($("#submissionUniversity").value);
 
-  const course = findCourse(
-    $("#submissionCourse").value
-  );
+  const course = findCourse($("#submissionCourse").value);
 
-  const series = findSeries(
-    $("#submissionSeries").value
-  );
+  const series = findSeries($("#submissionSeries").value);
 
   const firstName = $("#studentFirstName").value.trim();
   const lastName = $("#studentLastName").value.trim();
@@ -1577,36 +1342,24 @@ function createReviewContent() {
   const content = document.createElement("div");
 
   const intro = document.createElement("p");
-  intro.textContent =
-    "اطلاعات زیر را پیش از ارسال نهایی بازبینی کن.";
+  intro.textContent = "اطلاعات زیر را پیش از ارسال نهایی بازبینی کن.";
 
   const details = document.createElement("div");
   details.className = "detail-grid";
 
   details.append(
-    createDetail(
-      "نام و نام خانوادگی",
-      `${firstName} ${lastName}`
-    ),
-    createDetail(
-      "شماره دانشجویی",
-      $("#studentNumber").value.trim()
-    ),
-    createDetail(
-      "ایمیل",
-      $("#studentEmail").value.trim()
-    ),
+    createDetail("نام و نام خانوادگی", `${firstName} ${lastName}`),
+    createDetail("شماره دانشجویی", $("#studentNumber").value.trim()),
+    createDetail("ایمیل", $("#studentEmail").value.trim()),
     createDetail("دانشگاه", university?.name),
     createDetail("درس", course?.name),
-    createDetail("سری تمرین", series?.title)
+    createDetail("سری تمرین", series?.title),
   );
 
   const message = $("#message")?.value.trim();
 
   if (message) {
-    details.append(
-      createDetail("توضیحات", message)
-    );
+    details.append(createDetail("توضیحات", message));
   }
 
   const fileList = document.createElement("div");
@@ -1658,20 +1411,10 @@ function createReviewContent() {
 
   actions.append(editButton, submitButton);
 
-  content.append(
-    intro,
-    details,
-    fileList,
-    note,
-    actions
-  );
+  content.append(intro, details, fileList, note, actions);
 
   return content;
 }
-
-/* =========================================
-   Submission request
-========================================= */
 
 function setSubmitLoading(loading) {
   state.loading = loading;
@@ -1685,9 +1428,7 @@ function setSubmitLoading(loading) {
     const text = button.querySelector("span");
 
     if (text) {
-      text.textContent = loading
-        ? "در حال ارسال..."
-        : "ارسال پاسخ";
+      text.textContent = loading ? "در حال ارسال..." : "ارسال پاسخ";
     }
   }
 }
@@ -1707,40 +1448,19 @@ async function submitAnswer() {
 
     const formData = new FormData();
 
-    formData.append(
-      "exerciseSeriesId",
-      $("#submissionSeries").value
-    );
+    formData.append("exerciseSeriesId", $("#submissionSeries").value);
 
-    formData.append(
-      "universityId",
-      $("#submissionUniversity").value
-    );
+    formData.append("universityId", $("#submissionUniversity").value);
 
-    formData.append(
-      "courseId",
-      $("#submissionCourse").value
-    );
+    formData.append("courseId", $("#submissionCourse").value);
 
-    formData.append(
-      "studentFirstName",
-      $("#studentFirstName").value.trim()
-    );
+    formData.append("studentFirstName", $("#studentFirstName").value.trim());
 
-    formData.append(
-      "studentLastName",
-      $("#studentLastName").value.trim()
-    );
+    formData.append("studentLastName", $("#studentLastName").value.trim());
 
-    formData.append(
-      "studentNumber",
-      $("#studentNumber").value.trim()
-    );
+    formData.append("studentNumber", $("#studentNumber").value.trim());
 
-    formData.append(
-      "studentEmail",
-      $("#studentEmail").value.trim()
-    );
+    formData.append("studentEmail", $("#studentEmail").value.trim());
 
     const message = $("#message")?.value.trim();
 
@@ -1762,25 +1482,16 @@ async function submitAnswer() {
     closeModal();
 
     showSubmissionSuccess(data);
-
   } catch (error) {
     console.error("Submission failed:", error);
 
     closeModal();
 
-    notify(
-      error.message || "ارسال پاسخ انجام نشد. دوباره تلاش کن.",
-      "error"
-    );
-
+    notify(error.message || "ارسال پاسخ انجام نشد. دوباره تلاش کن.", "error");
   } finally {
     setSubmitLoading(false);
   }
 }
-
-/* =========================================
-   Submission result
-========================================= */
 
 function showSubmissionSuccess(data) {
   const receipt =
@@ -1795,8 +1506,7 @@ function showSubmissionSuccess(data) {
 
   const notice = document.createElement("div");
   notice.className = "notice success";
-  notice.textContent =
-    "پاسخ شما با موفقیت به سامانه ارسال شد.";
+  notice.textContent = "پاسخ شما با موفقیت به سامانه ارسال شد.";
 
   content.append(notice);
 
@@ -1820,10 +1530,7 @@ function showSubmissionSuccess(data) {
         await navigator.clipboard.writeText(String(receipt));
         notify("شناسه پیگیری کپی شد.", "success");
       } catch {
-        notify(
-          "کپی خودکار انجام نشد؛ شناسه را انتخاب و کپی کن.",
-          "error"
-        );
+        notify("کپی خودکار انجام نشد؛ شناسه را انتخاب و کپی کن.", "error");
       }
     });
 
@@ -1850,34 +1557,16 @@ function showSubmissionSuccess(data) {
 
   $("#submissionForm")?.reset();
 
-  populateCourses(
-    $("#submissionCourse"),
-    [],
-    "ابتدا دانشگاه را انتخاب کن"
-  );
+  populateCourses($("#submissionCourse"), [], "ابتدا دانشگاه را انتخاب کن");
 
-  populateSeriesSelect(
-    $("#submissionSeries"),
-    "",
-    ""
-  );
+  populateSeriesSelect($("#submissionSeries"), "", "");
 
-  setText(
-    "#seriesHint",
-    "ابتدا دانشگاه و سپس درس را انتخاب کن."
-  );
+  setText("#seriesHint", "ابتدا دانشگاه و سپس درس را انتخاب کن.");
 
-  setText(
-    "#submissionNotice",
-    "پاسخ شما با موفقیت ثبت شد."
-  );
+  setText("#submissionNotice", "پاسخ شما با موفقیت ثبت شد.");
 
   notify("پاسخ با موفقیت ارسال شد.", "success");
 }
-
-/* =========================================
-   Form submit — review before sending
-========================================= */
 
 $("#submissionForm")?.addEventListener("submit", (event) => {
   event.preventDefault();
@@ -1886,15 +1575,8 @@ $("#submissionForm")?.addEventListener("submit", (event) => {
 
   if (!validateSubmission()) return;
 
-  showModal(
-    "بازبینی اطلاعات پاسخ",
-    createReviewContent()
-  );
+  showModal("بازبینی اطلاعات پاسخ", createReviewContent());
 });
-
-/* =========================================
-   Application initialization
-========================================= */
 
 async function initializeStudentPanel() {
   renderAnswerFiles();
@@ -1903,16 +1585,12 @@ async function initializeStudentPanel() {
 
   try {
     await loadInitialData();
-
   } catch (error) {
     console.error("Student panel initialization failed:", error);
 
     updateConnectionStatus("offline");
 
-    notify(
-      "راه‌اندازی پنل دانشجو با مشکل مواجه شد.",
-      "error"
-    );
+    notify("راه‌اندازی پنل دانشجو با مشکل مواجه شد.", "error");
   }
 }
 

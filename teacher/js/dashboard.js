@@ -1,9 +1,10 @@
-
 (() => {
   "use strict";
 
   const $ = (selector, parent = document) => parent.querySelector(selector);
-  const $$ = (selector, parent = document) => [...parent.querySelectorAll(selector)];
+  const $$ = (selector, parent = document) => [
+    ...parent.querySelectorAll(selector),
+  ];
 
   const API_BASE = "/api/v1";
 
@@ -13,28 +14,26 @@
     exercises: [],
     submissions: [],
     teacher: null,
-    csrfToken: ""
+    csrfToken: "",
   };
 
   let selectedFiles = [];
 
-  // --------------------------------------------------
-  // API & SECURITY
-  // --------------------------------------------------
-
   function getCookie(name) {
     const cookie = document.cookie
       .split("; ")
-      .find(item => item.startsWith(`${name}=`));
+      .find((item) => item.startsWith(`${name}=`));
 
-    return cookie ? decodeURIComponent(cookie.split("=").slice(1).join("=")) : "";
+    return cookie
+      ? decodeURIComponent(cookie.split("=").slice(1).join("="))
+      : "";
   }
 
   async function initializeCSRF() {
     const response = await fetch(`${API_BASE}/csrf/`, {
       method: "GET",
       credentials: "same-origin",
-      headers: { Accept: "application/json" }
+      headers: { Accept: "application/json" },
     });
 
     if (!response.ok) {
@@ -56,7 +55,7 @@
     if (payload && typeof payload === "object") {
       const messages = Object.values(payload)
         .flat()
-        .filter(value => typeof value === "string");
+        .filter((value) => typeof value === "string");
 
       if (messages.length) return messages.join("، ");
     }
@@ -71,7 +70,7 @@
     const headers = {
       Accept: "application/json",
       ...(isFormData ? {} : { "Content-Type": "application/json" }),
-      ...(options.headers || {})
+      ...(options.headers || {}),
     };
 
     if (!["GET", "HEAD", "OPTIONS"].includes(method)) {
@@ -86,7 +85,7 @@
       ...options,
       method,
       credentials: "same-origin",
-      headers
+      headers,
     });
 
     if (response.status === 204) return null;
@@ -118,18 +117,18 @@
     return [];
   }
 
-  // --------------------------------------------------
-  // GENERAL HELPERS
-  // --------------------------------------------------
-
   function escapeHTML(value = "") {
-    return String(value).replace(/[&<>"']/g, char => ({
-      "&": "&amp;",
-      "<": "&lt;",
-      ">": "&gt;",
-      '"': "&quot;",
-      "'": "&#39;"
-    })[char]);
+    return String(value).replace(
+      /[&<>"']/g,
+      (char) =>
+        ({
+          "&": "&amp;",
+          "<": "&lt;",
+          ">": "&gt;",
+          '"': "&quot;",
+          "'": "&#39;",
+        })[char],
+    );
   }
 
   function faNumber(value) {
@@ -149,35 +148,28 @@
       day: "numeric",
       ...(String(value).includes("T")
         ? { hour: "2-digit", minute: "2-digit" }
-        : {})
+        : {}),
     }).format(date);
   }
 
   function normalizeDigits(value) {
     return String(value)
-      .replace(/[۰-۹]/g, digit =>
-        String("۰۱۲۳۴۵۶۷۸۹".indexOf(digit))
-      )
-      .replace(/[٠-٩]/g, digit =>
-        String("٠١٢٣٤٥٦٧٨٩".indexOf(digit))
-      )
+      .replace(/[۰-۹]/g, (digit) => String("۰۱۲۳۴۵۶۷۸۹".indexOf(digit)))
+      .replace(/[٠-٩]/g, (digit) => String("٠١٢٣٤٥٦٧٨٩".indexOf(digit)))
       .trim();
   }
 
   function jalaliParts(date) {
-    const parts = new Intl.DateTimeFormat(
-      "en-US-u-ca-persian-nu-latn",
-      {
-        year: "numeric",
-        month: "numeric",
-        day: "numeric"
-      }
-    ).formatToParts(date);
+    const parts = new Intl.DateTimeFormat("en-US-u-ca-persian-nu-latn", {
+      year: "numeric",
+      month: "numeric",
+      day: "numeric",
+    }).formatToParts(date);
 
     return Object.fromEntries(
       parts
-        .filter(part => ["year", "month", "day"].includes(part.type))
-        .map(part => [part.type, Number(part.value)])
+        .filter((part) => ["year", "month", "day"].includes(part.type))
+        .map((part) => [part.type, Number(part.value)]),
     );
   }
 
@@ -187,12 +179,12 @@
     const normalized = normalizeDigits(value).replace(/-/g, "/");
 
     const match = normalized.match(
-      /^(\d{4})\/(\d{1,2})\/(\d{1,2})(?:\s+(\d{1,2}):(\d{2}))?$/
+      /^(\d{4})\/(\d{1,2})\/(\d{1,2})(?:\s+(\d{1,2}):(\d{2}))?$/,
     );
 
     if (!match) {
       throw new Error(
-        "مهلت را به شکل سال/ماه/روز ساعت:دقیقه وارد کنید؛ مانند ۱۴۰۵/۰۸/۳۰ ۲۳:۵۹."
+        "مهلت را به شکل سال/ماه/روز ساعت:دقیقه وارد کنید؛ مانند ۱۴۰۵/۰۸/۳۰ ۲۳:۵۹.",
       );
     }
 
@@ -205,10 +197,14 @@
     const minute = Number(mins);
 
     if (
-      jm < 1 || jm > 12 ||
-      jd < 1 || jd > 31 ||
-      hour < 0 || hour > 23 ||
-      minute < 0 || minute > 59
+      jm < 1 ||
+      jm > 12 ||
+      jd < 1 ||
+      jd > 31 ||
+      hour < 0 ||
+      hour > 23 ||
+      minute < 0 ||
+      minute > 59
     ) {
       throw new Error("تاریخ یا ساعت واردشده معتبر نیست.");
     }
@@ -222,11 +218,7 @@
 
       const parts = jalaliParts(candidate);
 
-      if (
-        parts.year === jy &&
-        parts.month === jm &&
-        parts.day === jd
-      ) {
+      if (parts.year === jy && parts.month === jm && parts.day === jd) {
         found = candidate;
         break;
       }
@@ -238,7 +230,7 @@
 
     found.setHours(hour, minute, 0, 0);
 
-    const pad = number => String(number).padStart(2, "0");
+    const pad = (number) => String(number).padStart(2, "0");
 
     return `${found.getFullYear()}-${pad(found.getMonth() + 1)}-${pad(found.getDate())}T${pad(found.getHours())}:${pad(found.getMinutes())}`;
   }
@@ -252,11 +244,9 @@
 
     const parts = jalaliParts(date);
 
-    const format = number =>
-      new Intl.NumberFormat("fa-IR").format(number);
+    const format = (number) => new Intl.NumberFormat("fa-IR").format(number);
 
-    const pad = number =>
-      format(number).padStart(2, "۰");
+    const pad = (number) => format(number).padStart(2, "۰");
 
     return `${format(parts.year)}/${pad(parts.month)}/${pad(parts.day)} ${pad(date.getHours())}:${pad(date.getMinutes())}`;
   }
@@ -301,7 +291,7 @@
     items,
     placeholder,
     valueKey = "id",
-    labelKey = "name"
+    labelKey = "name",
   ) {
     if (!select) return;
 
@@ -309,104 +299,88 @@
 
     select.innerHTML =
       `<option value="">${escapeHTML(placeholder)}</option>` +
-      items.map(item => `
+      items
+        .map(
+          (item) => `
         <option value="${escapeHTML(item[valueKey] ?? "")}">
           ${escapeHTML(item[labelKey] ?? "")}
         </option>
-      `).join("");
+      `,
+        )
+        .join("");
 
-    if (
-      items.some(item => String(item[valueKey]) === current)
-    ) {
+    if (items.some((item) => String(item[valueKey]) === current)) {
       select.value = current;
     }
   }
 
   function universityName(id) {
-    return state.universities.find(
-      item => String(item.id) === String(id)
-    )?.name || "—";
-  }
-
-  function courseName(id) {
-    return state.courses.find(
-      item => String(item.id) === String(id)
-    )?.name || "—";
-  }
-
-  function exerciseById(id) {
-    return state.exercises.find(
-      item => String(item.id) === String(id)
+    return (
+      state.universities.find((item) => String(item.id) === String(id))?.name ||
+      "—"
     );
   }
 
-  function studentName(submission) {
-    return submission.studentName ||
-      [
-        submission.studentFirstName,
-        submission.studentLastName
-      ].filter(Boolean).join(" ") ||
-      "—";
+  function courseName(id) {
+    return (
+      state.courses.find((item) => String(item.id) === String(id))?.name || "—"
+    );
   }
 
-  // --------------------------------------------------
-  // DATA LOADING
-  // --------------------------------------------------
+  function exerciseById(id) {
+    return state.exercises.find((item) => String(item.id) === String(id));
+  }
+
+  function studentName(submission) {
+    return (
+      submission.studentName ||
+      [submission.studentFirstName, submission.studentLastName]
+        .filter(Boolean)
+        .join(" ") ||
+      "—"
+    );
+  }
 
   async function loadUniversities() {
     const payload = await api("/universities/");
 
-    state.universities = normalizeList(
-      payload,
-      ["universities"]
-    );
+    state.universities = normalizeList(payload, ["universities"]);
 
     [
       "#exercise-university",
       "#filter-university",
-      "#submission-university"
-    ].forEach(selector => {
-      const placeholder = selector === "#exercise-university"
-        ? "انتخاب دانشگاه"
-        : "همه دانشگاه‌ها";
+      "#submission-university",
+    ].forEach((selector) => {
+      const placeholder =
+        selector === "#exercise-university"
+          ? "انتخاب دانشگاه"
+          : "همه دانشگاه‌ها";
 
-      fillSelect(
-        $(selector),
-        state.universities,
-        placeholder
-      );
+      fillSelect($(selector), state.universities, placeholder);
     });
   }
 
   async function loadCourseCatalogs() {
     const catalogs = await Promise.all(
-      state.universities.map(async university => {
+      state.universities.map(async (university) => {
         const payload = await api(
-          `/universities/${encodeURIComponent(university.id)}/courses/`
+          `/universities/${encodeURIComponent(university.id)}/courses/`,
         );
 
         const items = normalizeList(payload, ["courses"]);
 
-        return items.map(course => ({
+        return items.map((course) => ({
           ...course,
-          universityId: course.universityId ?? university.id
+          universityId: course.universityId ?? university.id,
         }));
-      })
+      }),
     );
 
     state.courses = catalogs.flat();
 
-    fillSelect(
-      $("#filter-course"),
-      state.courses,
-      "همه درس‌ها"
-    );
+    fillSelect($("#filter-course"), state.courses, "همه درس‌ها");
 
-    fillSelect(
-      $("#submission-course"),
-      state.courses,
-      "همه درس‌ها"
-    );
+    fillSelect($("#submission-course"), state.courses, "همه درس‌ها");
   }
 
   async function loadCourses(universityId) {
@@ -414,7 +388,7 @@
 
     if (universityId) {
       const payload = await api(
-        `/universities/${encodeURIComponent(universityId)}/courses/`
+        `/universities/${encodeURIComponent(universityId)}/courses/`,
       );
 
       courses = normalizeList(payload, ["courses"]);
@@ -423,26 +397,19 @@
     fillSelect(
       $("#exercise-course"),
       courses,
-      universityId
-        ? "انتخاب درس"
-        : "ابتدا دانشگاه را انتخاب کنید"
+      universityId ? "انتخاب درس" : "ابتدا دانشگاه را انتخاب کنید",
     );
 
     $("#exercise-course").disabled = !universityId;
   }
 
   async function loadExercises() {
-    const payload = await api(
-      "/teacher/exercise-series/?status=published"
-    );
+    const payload = await api("/teacher/exercise-series/?status=published");
 
-    const items = normalizeList(
-      payload,
-      ["exerciseSeries"]
-    );
+    const items = normalizeList(payload, ["exerciseSeries"]);
 
     state.exercises = items.filter(
-      item => item.status === "published" || item.status == null
+      (item) => item.status === "published" || item.status == null,
     );
 
     fillSelect(
@@ -450,7 +417,7 @@
       state.exercises,
       "همه سری‌ها",
       "id",
-      "title"
+      "title",
     );
 
     renderExercises();
@@ -459,10 +426,7 @@
   async function loadSubmissions() {
     const payload = await api("/teacher/submissions/");
 
-    state.submissions = normalizeList(
-      payload,
-      ["submissions"]
-    );
+    state.submissions = normalizeList(payload, ["submissions"]);
 
     renderSubmissions();
   }
@@ -473,43 +437,28 @@
     state.teacher = teacher;
 
     const name =
-      teacher?.name ||
-      teacher?.fullName ||
-      teacher?.full_name ||
-      "استاد";
+      teacher?.name || teacher?.fullName || teacher?.full_name || "استاد";
 
     $("#sidebar-name").textContent = name;
     $("#settings-name").textContent = name;
     $("#settings-email").textContent = teacher?.email || "—";
   }
 
-  // --------------------------------------------------
-  // NAVIGATION
-  // --------------------------------------------------
-
   function navigate(page) {
     const titles = {
       dashboard: "صفحه اصلی",
-      create: $("#edit-id").value
-        ? "ویرایش سری تمرین"
-        : "ایجاد سری تمرین",
+      create: $("#edit-id").value ? "ویرایش سری تمرین" : "ایجاد سری تمرین",
       exercises: "سری‌های تمرین",
       submissions: "ارسال‌های دانشجویان",
-      settings: "تنظیمات"
+      settings: "تنظیمات",
     };
 
-    $$(".page-section").forEach(section => {
-      section.classList.toggle(
-        "active",
-        section.id === `page-${page}`
-      );
+    $$(".page-section").forEach((section) => {
+      section.classList.toggle("active", section.id === `page-${page}`);
     });
 
-    $$(".nav-item[data-page]").forEach(button => {
-      button.classList.toggle(
-        "active",
-        button.dataset.page === page
-      );
+    $$(".nav-item[data-page]").forEach((button) => {
+      button.classList.toggle("active", button.dataset.page === page);
     });
 
     $("#page-title").textContent = titles[page] || "پنل استاد";
@@ -520,41 +469,38 @@
     if (page === "submissions") renderSubmissions();
 
     if (page === "settings") {
-      loadTeacher().catch(error => {
+      loadTeacher().catch((error) => {
         showToast(`دریافت اطلاعات استاد انجام نشد: ${error.message}`, "error");
       });
     }
 
     window.scrollTo({
       top: 0,
-      behavior: "smooth"
+      behavior: "smooth",
     });
   }
 
-  // --------------------------------------------------
-  // EXERCISES
-  // --------------------------------------------------
-
   function renderExercises() {
-    const query = $("#exercise-search").value
-      .trim()
-      .toLocaleLowerCase("fa");
+    const query = $("#exercise-search").value.trim().toLocaleLowerCase("fa");
 
     const university = $("#filter-university").value;
     const course = $("#filter-course").value;
 
-    const list = state.exercises.filter(exercise => (
-      (!query || String(exercise.title || "")
-        .toLocaleLowerCase("fa")
-        .includes(query)) &&
-      (!university || String(exercise.universityId) === university) &&
-      (!course || String(exercise.courseId) === course)
-    ));
+    const list = state.exercises.filter(
+      (exercise) =>
+        (!query ||
+          String(exercise.title || "")
+            .toLocaleLowerCase("fa")
+            .includes(query)) &&
+        (!university || String(exercise.universityId) === university) &&
+        (!course || String(exercise.courseId) === course),
+    );
 
-    $("#exercise-count").textContent =
-      `${faNumber(list.length)} سری منتشرشده`;
+    $("#exercise-count").textContent = `${faNumber(list.length)} سری منتشرشده`;
 
-    $("#exercise-table-body").innerHTML = list.map(exercise => `
+    $("#exercise-table-body").innerHTML = list
+      .map(
+        (exercise) => `
       <tr>
         <td>
           <div class="primary-cell">
@@ -585,23 +531,24 @@
           </div>
         </td>
       </tr>
-    `).join("");
+    `,
+      )
+      .join("");
 
-    $("#exercise-empty").classList.toggle(
-      "hidden",
-      list.length > 0
-    );
+    $("#exercise-empty").classList.toggle("hidden", list.length > 0);
   }
 
   function renderSelectedFiles() {
     $("#selected-files").innerHTML = selectedFiles.length
-      ? selectedFiles.map((file, index) => `
+      ? selectedFiles
+          .map(
+            (file, index) => `
           <div class="selected-file">
             <span class="file-icon">
               ${escapeHTML(
                 (file.name.split(".").pop() || "FILE")
                   .slice(0, 4)
-                  .toUpperCase()
+                  .toUpperCase(),
               )}
             </span>
 
@@ -619,7 +566,9 @@
               ×
             </button>
           </div>
-        `).join("")
+        `,
+          )
+          .join("")
       : '<p class="muted file-empty">هنوز فایلی انتخاب نشده است.</p>';
   }
 
@@ -692,15 +641,15 @@
     }
 
     const selectedCourse = state.courses.find(
-      course =>
+      (course) =>
         String(course.id) === courseId &&
-        String(course.universityId) === universityId
+        String(course.universityId) === universityId,
     );
 
     if (!selectedCourse) {
       showToast(
         "درس انتخاب‌شده متعلق به دانشگاه انتخابی نیست یا اطلاعات آن دریافت نشده است.",
-        "error"
+        "error",
       );
       return;
     }
@@ -708,24 +657,21 @@
     const formData = new FormData();
 
     formData.append("title", title);
-    formData.append(
-      "description",
-      $("#exercise-description").value.trim()
-    );
+    formData.append("description", $("#exercise-description").value.trim());
     formData.append("universityId", universityId);
     formData.append("courseId", courseId);
 
     try {
       formData.append(
         "deadline",
-        jalaliInputToISO($("#exercise-deadline").value)
+        jalaliInputToISO($("#exercise-deadline").value),
       );
     } catch (error) {
       showToast(error.message, "error");
       return;
     }
 
-    selectedFiles.forEach(file => {
+    selectedFiles.forEach((file) => {
       formData.append("files", file, file.name);
     });
 
@@ -733,9 +679,7 @@
     const button = $("#publish-exercise");
 
     button.disabled = true;
-    button.textContent = editId
-      ? "در حال ذخیره تغییرات…"
-      : "در حال انتشار…";
+    button.textContent = editId ? "در حال ذخیره تغییرات…" : "در حال انتشار…";
 
     try {
       const path = editId
@@ -744,7 +688,7 @@
 
       await api(path, {
         method: editId ? "PATCH" : "POST",
-        body: formData
+        body: formData,
       });
 
       await loadExercises();
@@ -755,68 +699,59 @@
       showToast(
         editId
           ? "تغییرات سری تمرین ذخیره شد."
-          : "سری تمرین با موفقیت منتشر شد."
+          : "سری تمرین با موفقیت منتشر شد.",
       );
     } catch (error) {
-      showToast(
-        `ذخیره سری تمرین انجام نشد: ${error.message}`,
-        "error"
-      );
+      showToast(`ذخیره سری تمرین انجام نشد: ${error.message}`, "error");
     } finally {
       button.disabled = false;
       button.textContent = "انتشار تمرین";
     }
   }
 
-  // --------------------------------------------------
-  // SUBMISSIONS
-  // --------------------------------------------------
-
   function renderSubmissions() {
-    const query = $("#submission-search").value
-      .trim()
-      .toLocaleLowerCase("fa");
+    const query = $("#submission-search").value.trim().toLocaleLowerCase("fa");
 
     const university = $("#submission-university").value;
     const course = $("#submission-course").value;
     const exercise = $("#submission-exercise").value;
 
     const list = state.submissions
-      .filter(submission => {
+      .filter((submission) => {
         const haystack = [
           studentName(submission),
           submission.studentNumber || "",
-          submission.studentEmail || submission.email || ""
-        ].join(" ").toLocaleLowerCase("fa");
+          submission.studentEmail || submission.email || "",
+        ]
+          .join(" ")
+          .toLocaleLowerCase("fa");
 
         return (
           (!query || haystack.includes(query)) &&
           (!university || String(submission.universityId) === university) &&
           (!course || String(submission.courseId) === course) &&
-          (!exercise || String(
-            submission.exerciseSeriesId ?? submission.exerciseId
-          ) === exercise)
+          (!exercise ||
+            String(submission.exerciseSeriesId ?? submission.exerciseId) ===
+              exercise)
         );
       })
-      .sort((a, b) =>
-        new Date(b.submittedAt || 0) -
-        new Date(a.submittedAt || 0)
+      .sort(
+        (a, b) => new Date(b.submittedAt || 0) - new Date(a.submittedAt || 0),
       );
 
-    $("#submission-count").textContent =
-      `${faNumber(list.length)} ارسال`;
+    $("#submission-count").textContent = `${faNumber(list.length)} ارسال`;
 
-    $("#submission-table-body").innerHTML = list.map(submission => {
-      const exerciseId =
-        submission.exerciseSeriesId ?? submission.exerciseId;
+    $("#submission-table-body").innerHTML = list
+      .map((submission) => {
+        const exerciseId = submission.exerciseSeriesId ?? submission.exerciseId;
 
-      const exercise = exerciseById(exerciseId);
+        const exercise = exerciseById(exerciseId);
 
-      const files = Array.isArray(submission.files)
-        ? submission.files.length
-        : 0;
+        const files = Array.isArray(submission.files)
+          ? submission.files.length
+          : 0;
 
-      return `
+        return `
         <tr>
           <td>
             <div class="student-cell">
@@ -837,9 +772,9 @@
           <td>
             ${escapeHTML(
               exercise?.title ||
-              submission.exerciseTitle ||
-              submission.exerciseSeriesTitle ||
-              "—"
+                submission.exerciseTitle ||
+                submission.exerciseSeriesTitle ||
+                "—",
             )}
           </td>
 
@@ -863,46 +798,42 @@
           </td>
         </tr>
       `;
-    }).join("");
+      })
+      .join("");
 
-    $("#submission-empty").classList.toggle(
-      "hidden",
-      list.length > 0
-    );
+    $("#submission-empty").classList.toggle("hidden", list.length > 0);
   }
 
   function renderSubmissionDetails(submission) {
-    const exerciseId =
-      submission.exerciseSeriesId ?? submission.exerciseId;
+    const exerciseId = submission.exerciseSeriesId ?? submission.exerciseId;
 
     const exercise = exerciseById(exerciseId);
 
-    const files = Array.isArray(submission.files)
-      ? submission.files
-      : [];
+    const files = Array.isArray(submission.files) ? submission.files : [];
 
     const fileHtml = files.length
       ? `
         <ul class="submission-file-list">
-          ${files.map(file => {
-            const fileName =
-              file.name ||
-              file.originalName ||
-              file.original_name ||
-              "فایل ارسالی";
+          ${files
+            .map((file) => {
+              const fileName =
+                file.name ||
+                file.originalName ||
+                file.original_name ||
+                "فایل ارسالی";
 
-            const fileId = file.id;
+              const fileId = file.id;
 
-            if (!fileId || !submission.id) {
-              return `<li>${escapeHTML(fileName)}</li>`;
-            }
+              if (!fileId || !submission.id) {
+                return `<li>${escapeHTML(fileName)}</li>`;
+              }
 
-            const downloadPath =
-              `${API_BASE}/teacher/submissions/` +
-              `${encodeURIComponent(submission.id)}/files/` +
-              `${encodeURIComponent(fileId)}/download/`;
+              const downloadPath =
+                `${API_BASE}/teacher/submissions/` +
+                `${encodeURIComponent(submission.id)}/files/` +
+                `${encodeURIComponent(fileId)}/download/`;
 
-            return `
+              return `
               <li>
                 <a
                   href="${escapeHTML(downloadPath)}"
@@ -913,20 +844,16 @@
                 </a>
               </li>
             `;
-          }).join("")}
+            })
+            .join("")}
         </ul>
       `
       : "<p>فایلی ثبت نشده است.</p>";
 
-    const email =
-      submission.studentEmail ||
-      submission.email ||
-      "—";
+    const email = submission.studentEmail || submission.email || "—";
 
     const message =
-      submission.message ||
-      submission.description ||
-      "توضیحی ثبت نشده است.";
+      submission.message || submission.description || "توضیحی ثبت نشده است.";
 
     openModal(
       "جزئیات ارسال",
@@ -963,9 +890,9 @@
             <strong>
               ${escapeHTML(
                 exercise?.title ||
-                submission.exerciseTitle ||
-                submission.exerciseSeriesTitle ||
-                "—"
+                  submission.exerciseTitle ||
+                  submission.exerciseSeriesTitle ||
+                  "—",
               )}
             </strong>
           </div>
@@ -982,13 +909,9 @@
 
         <h4 class="modal-subtitle">فایل‌های ارسالی</h4>
         ${fileHtml}
-      `
+      `,
     );
   }
-
-  // --------------------------------------------------
-  // MOBILE SIDEBAR
-  // --------------------------------------------------
 
   const sidebar = $("#sidebar");
   const appLayout = $(".app-layout");
@@ -997,23 +920,16 @@
     sidebar.classList.remove("sidebar-open");
     appLayout.classList.remove("sidebar-visible");
 
-    $("#mobile-menu").setAttribute(
-      "aria-expanded",
-      "false"
-    );
+    $("#mobile-menu").setAttribute("aria-expanded", "false");
   }
 
-  // --------------------------------------------------
-  // EVENT LISTENERS
-  // --------------------------------------------------
-
-  $$(".nav-item[data-page]").forEach(button => {
+  $$(".nav-item[data-page]").forEach((button) => {
     button.addEventListener("click", () => {
       navigate(button.dataset.page);
     });
   });
 
-  $$("[data-go]").forEach(button => {
+  $$("[data-go]").forEach((button) => {
     button.addEventListener("click", () => {
       if (button.dataset.go === "create") {
         resetExerciseForm();
@@ -1030,13 +946,10 @@
 
     appLayout.classList.toggle("sidebar-visible", opened);
 
-    $("#mobile-menu").setAttribute(
-      "aria-expanded",
-      String(opened)
-    );
+    $("#mobile-menu").setAttribute("aria-expanded", String(opened));
   });
 
-  appLayout.addEventListener("click", event => {
+  appLayout.addEventListener("click", (event) => {
     if (
       appLayout.classList.contains("sidebar-visible") &&
       event.target === appLayout
@@ -1045,7 +958,7 @@
     }
   });
 
-  document.addEventListener("keydown", event => {
+  document.addEventListener("keydown", (event) => {
     if (event.key === "Escape") {
       closeMobileSidebar();
       closeModal();
@@ -1061,12 +974,12 @@
     try {
       await api("/auth/logout/", {
         method: "POST",
-        body: JSON.stringify({})
+        body: JSON.stringify({}),
       });
     } catch (error) {
       showToast(
         `خروج از حساب به‌طور کامل تأیید نشد: ${error.message}`,
-        "error"
+        "error",
       );
 
       button.disabled = false;
@@ -1076,20 +989,13 @@
     window.location.href = "login.html";
   });
 
-  // Exercise university
-
   $("#exercise-university").addEventListener("change", async () => {
     try {
       await loadCourses($("#exercise-university").value);
     } catch (error) {
-      showToast(
-        `دریافت درس‌ها انجام نشد: ${error.message}`,
-        "error"
-      );
+      showToast(`دریافت درس‌ها انجام نشد: ${error.message}`, "error");
     }
   });
-
-  // Exercise filters
 
   $("#filter-university").addEventListener("change", async () => {
     try {
@@ -1097,41 +1003,28 @@
 
       const courses = universityId
         ? state.courses.filter(
-            course => String(course.universityId) === universityId
+            (course) => String(course.universityId) === universityId,
           )
         : state.courses;
 
-      fillSelect(
-        $("#filter-course"),
-        courses,
-        "همه درس‌ها"
-      );
+      fillSelect($("#filter-course"), courses, "همه درس‌ها");
 
       renderExercises();
     } catch (error) {
-      showToast(
-        `اعمال فیلتر انجام نشد: ${error.message}`,
-        "error"
-      );
+      showToast(`اعمال فیلتر انجام نشد: ${error.message}`, "error");
     }
   });
-
-  // Submission filters
 
   $("#submission-university").addEventListener("change", () => {
     const universityId = $("#submission-university").value;
 
     const courses = universityId
       ? state.courses.filter(
-          course => String(course.universityId) === universityId
+          (course) => String(course.universityId) === universityId,
         )
       : state.courses;
 
-    fillSelect(
-      $("#submission-course"),
-      courses,
-      "همه درس‌ها"
-    );
+    fillSelect($("#submission-course"), courses, "همه درس‌ها");
 
     renderSubmissions();
   });
@@ -1139,34 +1032,27 @@
   $("#exercise-search").addEventListener("input", renderExercises);
   $("#filter-course").addEventListener("change", renderExercises);
 
-  [
-    "#submission-course",
-    "#submission-exercise",
-    "#submission-search"
-  ].forEach(selector => {
-    $(selector).addEventListener("input", renderSubmissions);
-  });
-
-  // Exercise files
+  ["#submission-course", "#submission-exercise", "#submission-search"].forEach(
+    (selector) => {
+      $(selector).addEventListener("input", renderSubmissions);
+    },
+  );
 
   $("#choose-files").addEventListener("click", () => {
     $("#exercise-files").click();
   });
 
-  $("#exercise-dropzone").addEventListener("click", event => {
+  $("#exercise-dropzone").addEventListener("click", (event) => {
     if (event.target.closest("button")) return;
     if (event.target.closest("#exercise-files")) return;
 
     $("#exercise-files").click();
   });
 
-  $("#exercise-files").addEventListener("change", event => {
+  $("#exercise-files").addEventListener("change", (event) => {
     const incoming = [...event.target.files];
 
-    const error = validateSelectedFiles([
-      ...selectedFiles,
-      ...incoming
-    ]);
+    const error = validateSelectedFiles([...selectedFiles, ...incoming]);
 
     if (error) {
       showToast(error, "error");
@@ -1178,21 +1064,16 @@
     renderSelectedFiles();
   });
 
-  $("#selected-files").addEventListener("click", event => {
+  $("#selected-files").addEventListener("click", (event) => {
     const button = event.target.closest("[data-remove-file]");
     if (!button) return;
 
-    selectedFiles.splice(
-      Number(button.dataset.removeFile),
-      1
-    );
+    selectedFiles.splice(Number(button.dataset.removeFile), 1);
 
     renderSelectedFiles();
   });
 
-  // Exercise form
-
-  $("#exercise-form").addEventListener("submit", event => {
+  $("#exercise-form").addEventListener("submit", (event) => {
     event.preventDefault();
     saveExercise();
   });
@@ -1202,31 +1083,23 @@
     navigate("exercises");
   });
 
-  // Exercise table actions
-
-  $("#exercise-table-body").addEventListener("click", event => {
-    const button = event.target.closest(
-      '[data-action="edit-exercise"]'
-    );
+  $("#exercise-table-body").addEventListener("click", (event) => {
+    const button = event.target.closest('[data-action="edit-exercise"]');
 
     if (!button) return;
 
-    startEditExercise(button.dataset.id).catch(error => {
+    startEditExercise(button.dataset.id).catch((error) => {
       showToast(error.message, "error");
     });
   });
 
-  // Submission table actions
-
-  $("#submission-table-body").addEventListener("click", event => {
-    const button = event.target.closest(
-      '[data-action="view-submission"]'
-    );
+  $("#submission-table-body").addEventListener("click", (event) => {
+    const button = event.target.closest('[data-action="view-submission"]');
 
     if (!button) return;
 
     const submission = state.submissions.find(
-      item => String(item.id) === button.dataset.id
+      (item) => String(item.id) === button.dataset.id,
     );
 
     if (submission) {
@@ -1234,24 +1107,15 @@
     }
   });
 
-  // Modal
-
   $("#modal-close").addEventListener("click", closeModal);
 
-  $("#modal-close-footer")?.addEventListener(
-    "click",
-    closeModal
-  );
+  $("#modal-close-footer")?.addEventListener("click", closeModal);
 
-  $("#modal-backdrop").addEventListener("click", event => {
+  $("#modal-backdrop").addEventListener("click", (event) => {
     if (event.target === $("#modal-backdrop")) {
       closeModal();
     }
   });
-
-  // --------------------------------------------------
-  // INITIALIZATION
-  // --------------------------------------------------
 
   async function initialize() {
     renderSelectedFiles();
@@ -1266,7 +1130,7 @@
 
       showToast(
         `احراز هویت یا اتصال اولیه انجام نشد: ${error.message}`,
-        "error"
+        "error",
       );
 
       if (error.message.includes("نشست کاربری")) {
@@ -1276,62 +1140,50 @@
       return;
     }
 
-    // Each data section loads independently.
-    // A failure in one section won't block the others.
-
     const tasks = [
       {
         name: "دانشگاه‌ها",
-        run: loadUniversities
+        run: loadUniversities,
       },
       {
         name: "سری‌های تمرین",
-        run: loadExercises
+        run: loadExercises,
       },
       {
         name: "ارسال‌های دانشجویان",
-        run: loadSubmissions
-      }
+        run: loadSubmissions,
+      },
     ];
 
-    const results = await Promise.allSettled(
-      tasks.map(task => task.run())
-    );
+    const results = await Promise.allSettled(tasks.map((task) => task.run()));
 
     const failures = results
       .map((result, index) => ({
         result,
-        name: tasks[index].name
+        name: tasks[index].name,
       }))
-      .filter(item => item.result.status === "rejected");
+      .filter((item) => item.result.status === "rejected");
 
     if (failures.length) {
       $("#service-error").classList.remove("hidden");
 
-      failures.forEach(item => {
-        console.error(
-          `خطا در دریافت ${item.name}:`,
-          item.result.reason
-        );
+      failures.forEach((item) => {
+        console.error(`خطا در دریافت ${item.name}:`, item.result.reason);
       });
 
       showToast(
-        `دریافت برخی اطلاعات با مشکل مواجه شد: ${failures.map(item => item.name).join("، ")}`,
-        "error"
+        `دریافت برخی اطلاعات با مشکل مواجه شد: ${failures.map((item) => item.name).join("، ")}`,
+        "error",
       );
     }
 
-    // Course catalogs depend on universities.
     if (results[0].status === "fulfilled") {
       try {
         await loadCourseCatalogs();
       } catch (error) {
         console.error("خطا در دریافت فهرست درس‌ها:", error);
 
-        showToast(
-          `دریافت فهرست درس‌ها انجام نشد: ${error.message}`,
-          "error"
-        );
+        showToast(`دریافت فهرست درس‌ها انجام نشد: ${error.message}`, "error");
       }
     }
   }
